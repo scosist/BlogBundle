@@ -106,10 +106,23 @@ In YAML:
 # app/config/config.yml
 # StfalconBlogBundle Configuration
 stfalcon_blog:
-    disqus_shortname: "your-disqus-shortname-goes-here"
+    disqus_shortname:     ~ # Required
     rss:
-        title: "your-blog-title-goes-here"
-        description: "your-blog-description-goes-here"
+        title:                ~
+        description:          ~
+    post:
+        entity:               ~ # Required
+        manager:              stfalcon_blog.post.manager.default
+        admin:
+            class:                Stfalcon\Bundle\BlogBundle\Admin\PostAdmin
+            controller:           SonataAdminBundle:CRUD
+    tag:
+        entity:               ~ # Required
+        manager:              stfalcon_blog.tag.manager.default
+        admin:
+            class:                Stfalcon\Bundle\BlogBundle\Admin\TagAdmin
+            controller:           SonataAdminBundle:CRUD
+
 
 # Sonata Configuration
 sonata_block:

@@ -5,7 +5,7 @@ namespace Stfalcon\Bundle\BlogBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
-use Stfalcon\Bundle\BlogBundle\Entity\Tag;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * TagController
@@ -23,15 +23,23 @@ class TagController extends AbstractController
      *      defaults={"page"="1", "title"="page"})
      * @Template()
      *
-     * @param Tag $tag
-     * @param int $page page number
+     * @param string $text text of tag
+     * @param int    $page page number
      *
      * @return array
+     *
+     * @throws NotFoundHttpException
      */
-    public function viewAction(Tag $tag, $page)
+    public function viewAction($text, $page)
     {
+        $tag = $this->get('stfalcon_blog.tag.manager')->findTagBy(array('text' => $text));
+        if (!$tag) {
+            throw new NotFoundHttpException();
+        }
+
+        $postsQuery = $this->get('stfalcon_blog.post.manager')->findPostsByTagAsQuery($tag);
         $posts = $this->get('knp_paginator')
-            ->paginate($tag->getPosts(), $page, 10);
+            ->paginate($postsQuery, $page, 10);
 
         if ($this->has('menu.breadcrumbs')) {
             $breadcrumbs = $this->get('menu.breadcrumbs');
@@ -39,10 +47,11 @@ class TagController extends AbstractController
             $breadcrumbs->addChild($tag->getText())->setIsCurrent(true);
         }
 
-        return $this->_getRequestDataWithDisqusShortname(array(
+        return array(
             'tag' => $tag,
             'posts' => $posts,
-        ));
+            'disqus_shortname' => $this->container->getParameter('stfalcon_blog.disqus_shortname')
+        );
     }
 
 }

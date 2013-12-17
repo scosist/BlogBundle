@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="stfalcon_blog.post.admin" class="%stfalcon_blog.post.admin.class%">
+            <tag name="sonata.admin" manager_type="orm" group="BlogBundle" label="Posts" />
+            <argument />
+            <argument>%stfalcon_blog.post.entity%</argument>
+            <argument>%stfalcon_blog.post.admin.controller%</argument>
+        </service>
+
+        <service id="stfalcon_blog.tag.admin" class="%stfalcon_blog.tag.admin.class%">
+            <tag name="sonata.admin" manager_type="orm" group="BlogBundle" label="Tags" />
+            <argument />
+            <argument>%stfalcon_blog.tag.entity%</argument>
+            <argument>%stfalcon_blog.tag.admin.controller%</argument>
+        </service>
+    </services>
+
+</container>

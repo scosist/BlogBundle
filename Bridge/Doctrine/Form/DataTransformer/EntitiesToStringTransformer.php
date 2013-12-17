@@ -2,6 +2,7 @@
 
 namespace Stfalcon\Bundle\BlogBundle\Bridge\Doctrine\Form\DataTransformer;
 
+use Stfalcon\Bundle\BlogBundle\Entity\TagManager;
 use Symfony\Component\Form\DataTransformerInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,20 +17,18 @@ class EntitiesToStringTransformer implements DataTransformerInterface
 {
 
     /**
-     * @var Doctrine\ORM\EntityManager
+     * @var TagManager
      */
-    protected $em;
+    protected $manager;
 
     /**
      * Constructor injection. Set entity manager to object
      *
-     * @param Doctrine\ORM\EntityManager $em Entity manager object
-     *
-     * @return void
+     * @param TagManager $manager Tag manager
      */
-    public function __construct(\Doctrine\ORM\EntityManager $em)
+    public function __construct(TagManager $manager)
     {
-        $this->em = $em;
+        $this->manager = $manager;
     }
 
     /**
@@ -38,6 +37,8 @@ class EntitiesToStringTransformer implements DataTransformerInterface
      * @param Collection|null $collection A collection of entities or NULL
      *
      * @return string|null An string of tags or NULL
+     *
+     * @throws \Symfony\Component\Form\Exception\UnexpectedTypeException
      */
     public function transform($collection)
     {
@@ -51,7 +52,7 @@ class EntitiesToStringTransformer implements DataTransformerInterface
 
         $array = array();
         foreach ($collection as $entity) {
-            array_push($array, $entity->getText());
+            $array[] = $entity->getText();
         }
 
         return implode(', ', $array);
@@ -63,6 +64,8 @@ class EntitiesToStringTransformer implements DataTransformerInterface
      * @param string|null $data Input string data
      *
      * @return Collection|null
+     *
+     * @throws \Symfony\Component\Form\Exception\UnexpectedTypeException
      */
     public function reverseTransform($data)
     {
@@ -77,11 +80,10 @@ class EntitiesToStringTransformer implements DataTransformerInterface
         }
 
         foreach ($this->_stringToArray($data) as $text) {
-            $tag = $this->em->getRepository("StfalconBlogBundle:Tag")
-                    ->findOneBy(array('text' => $text));
+            $tag = $this->manager->findTagBy(array('text' => $text));
             if (!$tag) {
-                $tag = new \Stfalcon\Bundle\BlogBundle\Entity\Tag($text);
-                $this->em->persist($tag);
+                $tag = $this->manager->create($text);
+                $this->manager->save($tag);
             }
             $collection->add($tag);
         }
@@ -93,6 +95,8 @@ class EntitiesToStringTransformer implements DataTransformerInterface
      * Convert string of tags to array
      *
      * @param string $string
+     *
+     * @return array
      */
     private function _stringToArray($string)
     {

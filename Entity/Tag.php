@@ -10,49 +10,24 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Stfalcon\Bundle\BlogBundle\Entity\Tag
  *
  * @author Stepan Tanasiychuk <ceo@stfalcon.com>
- * @ORM\Table(name="blog_tags")
- * @ORM\Entity
+ *
+ * @ORM\MappedSuperclass
  */
 class Tag
 {
     /**
-     * Tag id
-     *
-     * @var integer $id
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
      * Tag text
      *
-     * @var text $text
+     * @var string $text
      * @Assert\NotBlank()
      * @ORM\Column(name="text", type="string", length=255)
      */
-    private $text = '';
+    protected $text = '';
 
     /**
-     * @var Doctrine\Common\Collections\ArrayCollection
-     *
-     * @ORM\ManyToMany(targetEntity="Stfalcon\Bundle\BlogBundle\Entity\Post", mappedBy="tags")
+     * @var ArrayCollection
      */
-    private $posts;
-
-    /**
-     * Entity constructor
-     *
-     * @param string $text A tag text
-     *
-     * @return void
-     */
-    public function  __construct($text = null)
-    {
-        $this->text = $text;
-        $this->posts = new ArrayCollection();
-    }
+    protected $posts;
 
     /**
      * Get Tag id
@@ -87,22 +62,12 @@ class Tag
     }
 
     /**
-     * Get posts for this tag
-     *
-     * @return ArrayCollection
-     */
-    public function getPosts()
-    {
-        return $this->posts;
-    }
-
-    /**
      * This method allows a class to decide how it will react when it is treated like a string
      *
      * @return string
      */
     public function __toString()
     {
-        return $this->getText();
+        return $this->getText()?$this->getText():'';
     }
 }

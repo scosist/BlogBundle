@@ -11,21 +11,10 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * Post entity
  *
  * @author Stepan Tanasiychuk <ceo@stfalcon.com>
- * @ORM\Table(name="blog_posts")
- * @ORM\Entity(repositoryClass="Stfalcon\Bundle\BlogBundle\Repository\PostRepository")
+ * @ORM\MappedSuperclass
  */
 class Post
 {
-    /**
-     * Post id
-     *
-     * @var integer $id
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
     /**
      * Post title
      *
@@ -33,7 +22,7 @@ class Post
      * @Assert\NotBlank()
      * @ORM\Column(name="title", type="string", length=255)
      */
-    private $title = '';
+    protected $title = '';
 
     /**
      * @var string $slug
@@ -42,37 +31,31 @@ class Post
      * @Assert\MinLength(3)
      * @ORM\Column(name="slug", type="string", length=128, unique=true)
      */
-    private $slug;
+    protected $slug;
 
     /**
      * Post text
      *
-     * @var text $text
+     * @var string $text
      * @Assert\NotBlank()
      * @ORM\Column(name="text", type="text")
      */
-    private $text;
+    protected $text;
 
     /**
      * Post text as HTML code
      *
-     * @var text $textAsHtml
+     * @var string $textAsHtml
      * @ORM\Column(name="text_as_html", type="text")
      */
-    private $textAsHtml;
+    protected $textAsHtml;
 
     /**
      * Tags for post
      *
      * @var ArrayCollection
-     * @Assert\NotBlank()
-     * @ORM\ManyToMany(targetEntity="Stfalcon\Bundle\BlogBundle\Entity\Tag")
-     * @ORM\JoinTable(name="blog_posts_tags",
-     *      joinColumns={@ORM\JoinColumn(name="post_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="tag_id", referencedColumnName="id")}
-     *      )
      */
-    private $tags;
+    protected $tags;
 
     /**
      * @var \DateTime $created
@@ -80,7 +63,7 @@ class Post
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
      */
-    private $created;
+    protected $created;
 
     /**
      * @var \DateTime $updated
@@ -88,56 +71,14 @@ class Post
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="update")
      */
-    private $updated;
+    protected $updated;
 
     /**
      * @var int $commentsCount
      *
      * @ORM\Column(type="integer")
      */
-    private $commentsCount = 0;
-
-    /**
-     * Initialization properties for new post entity
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->tags = new ArrayCollection();
-    }
-
-    /**
-     * Get post id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set tags to post
-     *
-     * @param $tags Tags collection
-     *
-     * @return void
-     */
-    public function setTags($tags)
-    {
-        $this->tags = $tags;
-    }
-
-    /**
-     * Get all tags
-     *
-     * @return ArrayCollection
-     */
-    public function getTags()
-    {
-        return $this->tags;
-    }
+    protected $commentsCount = 0;
 
     /**
      * Set post title
@@ -233,6 +174,7 @@ class Post
             '/<pre lang="(.*?)">\r?\n?(.*?)\r?\n?\<\/pre>/is',
             function($data) {
                 $geshi = new \GeSHi($data[2], $data[1]);
+
                 return $geshi->parse_code();
             }, $text
         );
@@ -313,6 +255,6 @@ class Post
      */
     public function __toString()
     {
-        return $this->getTitle();
+        return $this->getTitle()?$this->getTitle():'';
     }
 }

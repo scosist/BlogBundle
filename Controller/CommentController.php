@@ -5,7 +5,8 @@ namespace Stfalcon\Bundle\BlogBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
-use Stfalcon\Bundle\BlogBundle\Entity\Post;
+
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Controller for actions with DISQUS comments
@@ -18,16 +19,22 @@ class CommentController extends Controller
     /**
      * Synchronization comments count with disqus
      *
-     * @param Post $post Post object
+     * @param string $slug Slug of post
      *
      * @return Response
      * @Route("/blog/post/{slug}/disqus-sync", name="blog_post_disqus_sync")
+     *
+     * @throws NotFoundHttpException
      */
-    public function disqusSyncAction(Post $post)
+    public function disqusSyncAction($slug)
     {
         // @todo. нужно доставать полный список ЗААПРУВЛЕННЫХ комментариев или
         // колличество комментариев к записи (если такой метод появится в API disqus)
         // после чего обновлять их колличество в БД
+        $post = $this->get('stfalcon_blog.post.manager')->findPostBy(array('slug' => $slug));
+        if (!$post) {
+            throw new NotFoundHttpException();
+        }
 
         $post->setCommentsCount($post->getCommentsCount() + 1);
         $em = $this->get('doctrine.orm.entity_manager');

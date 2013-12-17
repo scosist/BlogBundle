@@ -5,8 +5,7 @@ namespace Stfalcon\Bundle\BlogBundle\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-
-use Stfalcon\Bundle\BlogBundle\Entity\Post;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * PostController
@@ -15,42 +14,32 @@ use Stfalcon\Bundle\BlogBundle\Entity\Post;
  */
 class PostController extends AbstractController
 {
-
-    private function _getRequestArrayWithDisqusShortname($array)
-    {
-        $config = $this->container->getParameter('stfalcon_blog.config');
-        return array_merge(
-            $array,
-            array('disqus_shortname' => $config['disqus_shortname'])
-        );
-    }
-
     /**
      * List of posts for admin
+     *
+     * @param int $page Page number
+     *
+     * @return array
      *
      * @Route("/blog/{title}/{page}", name="blog",
      *      requirements={"page"="\d+", "title"="page"},
      *      defaults={"page"="1", "title"="page"})
      * @Template()
-     *
-     * @param int $page Page number
-     *
-     * @return array
      */
     public function indexAction($page)
     {
-        $allPosts = $this->get('doctrine')->getEntityManager()
-                ->getRepository("StfalconBlogBundle:Post")->getAllPosts();
-        $posts= $this->get('knp_paginator')->paginate($allPosts, $page, 10);
+        $allPostsQuery = $this->get('stfalcon_blog.post.manager')->findAllPostsAsQuery();
+        $posts= $this->get('knp_paginator')->paginate($allPostsQuery, $page, 10);
 
         if ($this->has('application_default.menu.breadcrumbs')) {
             $breadcrumbs = $this->get('application_default.menu.breadcrumbs');
             $breadcrumbs->addChild('Блог')->setCurrent(true);
         }
 
-        return $this->_getRequestArrayWithDisqusShortname(array(
-            'posts' => $posts
-        ));
+        return array(
+            'posts' => $posts,
+            'disqus_shortname' => $this->container->getParameter('stfalcon_blog.disqus_shortname')
+        );
     }
 
     /**
@@ -59,21 +48,28 @@ class PostController extends AbstractController
      * @Route("/blog/post/{slug}", name="blog_post_view")
      * @Template()
      *
-     * @param Post $post
+     * @param string $slug
      *
      * @return array
+     *
+     * @throws NotFoundHttpException
      */
-    public function viewAction(Post $post)
+    public function viewAction($slug)
     {
+        $post = $this->get('stfalcon_blog.post.manager')->findPostBy(array('slug' => $slug));
+        if (!$post) {
+            throw new NotFoundHttpException();
+        }
         if ($this->has('application_default.menu.breadcrumbs')) {
             $breadcrumbs = $this->get('application_default.menu.breadcrumbs');
             $breadcrumbs->addChild('Блог', array('route' => 'blog'));
             $breadcrumbs->addChild($post->getTitle())->setCurrent(true);
         }
 
-        return $this->_getRequestArrayWithDisqusShortname(array(
-            'post' => $post
-        ));
+        return array(
+            'post' => $post,
+            'disqus_shortname' => $this->container->getParameter('stfalcon_blog.disqus_shortname')
+        );
     }
 
     /**
@@ -87,14 +83,11 @@ class PostController extends AbstractController
     {
         $feed = new \Zend\Feed\Writer\Feed();
 
-        $config = $this->container->getParameter('stfalcon_blog.config');
-
-        $feed->setTitle($config['rss']['title']);
-        $feed->setDescription($config['rss']['description']);
+        $feed->setTitle($this->container->getParameter('stfalcon_blog.rss.title'));
+        $feed->setDescription($this->container->getParameter('stfalcon_blog.rss.description'));
         $feed->setLink($this->generateUrl('blog_rss', array(), true));
 
-        $posts = $this->get('doctrine')->getEntityManager()
-                ->getRepository("StfalconBlogBundle:Post")->getAllPosts();
+        $posts = $this->get('stfalcon_blog.post.manager')->findAllPosts();
         foreach ($posts as $post) {
             $entry = new \Zend\Feed\Writer\Entry();
             $entry->setTitle($post->getTitle());
@@ -117,8 +110,7 @@ class PostController extends AbstractController
      */
     public function lastAction($count = 1)
     {
-        $posts = $this->get('doctrine')->getEntityManager()
-                ->getRepository("StfalconBlogBundle:Post")->getLastPosts($count);
+        $posts = $this->get('stfalcon_blog.post.manager')->findLastPosts($count);
 
         return array('posts' => $posts);
     }

@@ -2,6 +2,7 @@
 
 namespace Stfalcon\Bundle\BlogBundle\Bridge\Doctrine\Form\Type;
 
+use Stfalcon\Bundle\BlogBundle\Entity\TagManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -15,18 +16,16 @@ use Stfalcon\Bundle\BlogBundle\Bridge\Doctrine\Form\DataTransformer\EntitiesToSt
 class TagsType extends AbstractType
 {
 
-    protected $registry;
+    protected $tagManager;
 
     /**
      * Constructor injection
      *
-     * @param RegistryInterface $registry Doctrine registry object
-     *
-     * @return void
+     * @param TagManager $manager Tag manager
      */
-    public function __construct(RegistryInterface $registry)
+    public function __construct(TagManager $manager)
     {
-        $this->registry = $registry;
+        $this->tagManager = $manager;
     }
 
     /**
@@ -39,8 +38,8 @@ class TagsType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->prependClientTransformer(
-            new EntitiesToStringTransformer($this->registry->getEntityManager())
+        $builder->addModelTransformer(
+            new EntitiesToStringTransformer($this->tagManager)
         );
     }
 

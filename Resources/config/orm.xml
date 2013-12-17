@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="stfalcon_blog.post_manager.class">Stfalcon\Bundle\BlogBundle\Entity\PostManager</parameter>
+        <parameter key="stfalcon_blog.tag_manager.class">Stfalcon\Bundle\BlogBundle\Entity\TagManager</parameter>
+    </parameters>
+
+    <services>
+        <service id="stfalcon_blog.post.manager.default" class="%stfalcon_blog.post_manager.class%">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument>%stfalcon_blog.post.entity%</argument>
+        </service>
+
+        <service id="stfalcon_blog.tag.manager.default" class="%stfalcon_blog.tag_manager.class%">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument>%stfalcon_blog.tag.entity%</argument>
+        </service>
+    </services>
+
+</container>

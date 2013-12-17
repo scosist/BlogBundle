@@ -13,8 +13,7 @@ class PostAdmin extends Admin
             ->add('title')
             ->add('slug')
             ->add('text')
-            ->add('tags', 'tags')
-        ;
+            ->add('tags', 'tags');
     }
 
     protected function configureListFields(ListMapper $listMapper)
@@ -22,7 +21,6 @@ class PostAdmin extends Admin
         $listMapper
             ->addIdentifier('slug')
             ->add('title')
-            ->add('created')
-        ;
+            ->add('created');
     }
 }
