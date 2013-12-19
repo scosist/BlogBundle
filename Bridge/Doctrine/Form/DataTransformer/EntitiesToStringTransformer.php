@@ -2,6 +2,7 @@
 
 namespace Stfalcon\Bundle\BlogBundle\Bridge\Doctrine\Form\DataTransformer;
 
+use Doctrine\ORM\EntityManager;
 use Stfalcon\Bundle\BlogBundle\Entity\TagManager;
 use Symfony\Component\Form\DataTransformerInterface;
 use Doctrine\Common\Collections\Collection;
@@ -17,18 +18,22 @@ class EntitiesToStringTransformer implements DataTransformerInterface
 {
 
     /**
-     * @var TagManager
+     * @var EntityManager $em
      */
-    protected $manager;
+    protected $em;
+    /** @var  string $class */
+    protected $class;
 
     /**
-     * Constructor injection. Set entity manager to object
+     * Constructor injection
      *
-     * @param TagManager $manager Tag manager
+     * @param EntityManager $em
+     * @param string        $class
      */
-    public function __construct(TagManager $manager)
+    public function __construct(EntityManager $em, $class)
     {
-        $this->manager = $manager;
+        $this->em = $em;
+        $this->class = $class;
     }
 
     /**
@@ -78,12 +83,12 @@ class EntitiesToStringTransformer implements DataTransformerInterface
         if (!is_string($data)) {
             throw new UnexpectedTypeException($data, 'string');
         }
-
+        $repository = $this->em->getRepository($this->class);
         foreach ($this->_stringToArray($data) as $text) {
-            $tag = $this->manager->findTagBy(array('text' => $text));
+            $tag = $repository->findOneBy(array('text' => $text));
             if (!$tag) {
-                $tag = $this->manager->create($text);
-                $this->manager->save($tag);
+                $tag = new $this->class($text);
+                $this->em->persist($tag);
             }
             $collection->add($tag);
         }

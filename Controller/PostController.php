@@ -3,6 +3,7 @@
 namespace Stfalcon\Bundle\BlogBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -12,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *
  * @author Stepan Tanasiychuk <ceo@stfalcon.com>
  */
-class PostController extends AbstractController
+class PostController extends Controller
 {
     /**
      * List of posts for admin
@@ -28,7 +29,7 @@ class PostController extends AbstractController
      */
     public function indexAction($page)
     {
-        $allPostsQuery = $this->get('stfalcon_blog.post.manager')->findAllPostsAsQuery();
+        $allPostsQuery = $this->get('stfalcon_blog.post.repository')->findAllPostsAsQuery();
         $posts= $this->get('knp_paginator')->paginate($allPostsQuery, $page, 10);
 
         if ($this->has('application_default.menu.breadcrumbs')) {
@@ -56,7 +57,7 @@ class PostController extends AbstractController
      */
     public function viewAction($slug)
     {
-        $post = $this->get('stfalcon_blog.post.manager')->findPostBy(array('slug' => $slug));
+        $post = $this->get('stfalcon_blog.post.repository')->findOneBy(array('slug' => $slug));
         if (!$post) {
             throw new NotFoundHttpException();
         }
@@ -87,7 +88,7 @@ class PostController extends AbstractController
         $feed->setDescription($this->container->getParameter('stfalcon_blog.rss.description'));
         $feed->setLink($this->generateUrl('blog_rss', array(), true));
 
-        $posts = $this->get('stfalcon_blog.post.manager')->findAllPosts();
+        $posts = $this->get('stfalcon_blog.post.repository')->findAllPosts();
         foreach ($posts as $post) {
             $entry = new \Zend\Feed\Writer\Entry();
             $entry->setTitle($post->getTitle());
@@ -110,7 +111,7 @@ class PostController extends AbstractController
      */
     public function lastAction($count = 1)
     {
-        $posts = $this->get('stfalcon_blog.post.manager')->findLastPosts($count);
+        $posts = $this->get('stfalcon_blog.post.repository')->findLastPosts($count);
 
         return array('posts' => $posts);
     }

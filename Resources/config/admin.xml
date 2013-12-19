@@ -4,6 +4,14 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
+    <parameters>
+        <parameter key="stfalcon_blog.post.admin.class">Stfalcon\Bundle\BlogBundle\Admin\PostAdmin</parameter>
+        <parameter key="stfalcon_blog.tag.admin.class">Stfalcon\Bundle\BlogBundle\Admin\TagAdmin</parameter>
+
+        <parameter key="stfalcon_blog.post.admin.controller">SonataAdminBundle:CRUD</parameter>
+        <parameter key="stfalcon_blog.tag.admin.controller">SonataAdminBundle:CRUD</parameter>
+    </parameters>
+
     <services>
         <service id="stfalcon_blog.post.admin" class="%stfalcon_blog.post.admin.class%">
             <tag name="sonata.admin" manager_type="orm" group="BlogBundle" label="Posts" />

@@ -9,51 +9,63 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author Stepan Tanasiychuk <ceo@stfalcon.com>
  */
-class PostRepository extends EntityRepository
+abstract class PostRepository extends EntityRepository
 {
 
     /**
-     * Get all posts
+     * Find all posts
      *
      * @return array
      */
-    public function getAllPosts()
+    public function findAllPosts()
     {
-        $query = $this->getEntityManager()->createQuery('
-            SELECT
-                p
-            FROM
-                StfalconBlogBundle:Post p
-            ORDER BY
-                p.created DESC
-            ');
+        $query = $this->findAllPostsAsQuery();
 
         return $query->getResult();
     }
 
     /**
-     * Get last posts
+     * @return mixed
+     */
+    public function findAllPostsAsQuery()
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.created', 'DESC')
+            ->getQuery();
+    }
+
+    /**
+     * Find last posts
      *
      * @param integer $count Max count of returned posts
      *
      * @return array
      */
-    public function getLastPosts($count = null)
+    public function findLastPosts($count = null)
     {
-        $query = $this->getEntityManager()->createQuery('
-            SELECT
-                p
-            FROM
-                StfalconBlogBundle:Post p
-            ORDER BY
-                p.created DESC
-            ');
-
+        $query = $this->findAllPostsAsQuery();
         if ((int) $count) {
             $query->setMaxResults($count);
         }
 
         return $query->getResult();
+    }
+
+    /**
+     * Find posts by tag as query
+     *
+     * @param mixed $tag
+     *
+     * @return mixed
+     */
+    public function findPostsByTagAsQuery($tag)
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.tags', 't')
+            ->where('t = :tag')
+            ->orderBy('p.created', 'DESC')
+            ->setParameter('tag', $tag)
+            ->getQuery();
     }
 
 }

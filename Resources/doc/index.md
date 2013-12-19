@@ -112,13 +112,13 @@ stfalcon_blog:
         description:          ~
     post:
         entity:               ~ # Required
-        manager:              stfalcon_blog.post.manager.default
+        repository:           ~ # Required
         admin:
             class:                Stfalcon\Bundle\BlogBundle\Admin\PostAdmin
             controller:           SonataAdminBundle:CRUD
     tag:
         entity:               ~ # Required
-        manager:              stfalcon_blog.tag.manager.default
+        repository:           ~ # Required
         admin:
             class:                Stfalcon\Bundle\BlogBundle\Admin\TagAdmin
             controller:           SonataAdminBundle:CRUD

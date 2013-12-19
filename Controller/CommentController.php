@@ -31,7 +31,7 @@ class CommentController extends Controller
         // @todo. нужно доставать полный список ЗААПРУВЛЕННЫХ комментариев или
         // колличество комментариев к записи (если такой метод появится в API disqus)
         // после чего обновлять их колличество в БД
-        $post = $this->get('stfalcon_blog.post.manager')->findPostBy(array('slug' => $slug));
+        $post = $this->get('stfalcon_blog.post.repository')->findOneBy(array('slug' => $slug));
         if (!$post) {
             throw new NotFoundHttpException();
         }

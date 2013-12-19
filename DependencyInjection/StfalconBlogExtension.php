@@ -28,10 +28,7 @@ class StfalconBlogExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $processor = new Processor();
-        $configuration = new Configuration();
-
-        $config = $processor->processConfiguration($configuration, $configs);
+        $config = $configs[0];
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
@@ -39,22 +36,30 @@ class StfalconBlogExtension extends Extension
         $container->setParameter('stfalcon_blog.rss.title', $config['rss']['title']);
         $container->setParameter('stfalcon_blog.rss.description', $config['rss']['description']);
 
-        $loader->load('orm.xml');
         $container->setParameter('stfalcon_blog.post.entity', $config['post']['entity']);
-        $container->setAlias('stfalcon_blog.post.manager', $config['post']['manager']);
-        unset($config['post']['manager']);
-
         $container->setParameter('stfalcon_blog.tag.entity', $config['tag']['entity']);
-        $container->setAlias('stfalcon_blog.tag.manager', $config['tag']['manager']);
-        unset($config['tag']['manager']);
 
+        if (isset($config['post']['repository'])) {
+            $container->setParameter('stfalcon_blog.post.repository', $config['post']['repository']);
+        }
+        if (isset($config['tag']['repository'])) {
+            $container->setParameter('stfalcon_blog.tag.repository', $config['tag']['repository']);
+        }
+        $loader->load('orm.xml');
         $loader->load('admin.xml');
 
-        $container->setParameter('stfalcon_blog.post.admin.class', $config['post']['admin']['class']);
-        $container->setParameter('stfalcon_blog.post.admin.controller', $config['post']['admin']['controller']);
-
-        $container->setParameter('stfalcon_blog.tag.admin.class', $config['tag']['admin']['class']);
-        $container->setParameter('stfalcon_blog.tag.admin.controller', $config['tag']['admin']['controller']);
+        if (isset($config['post']['admin']['class'])) {
+            $container->setParameter('stfalcon_blog.post.admin.class', $config['post']['admin']['class']);
+        }
+        if (isset($config['post']['admin']['controller'])) {
+            $container->setParameter('stfalcon_blog.post.admin.controller', $config['post']['admin']['controller']);
+        }
+        if (isset($config['tag']['admin']['class'])) {
+            $container->setParameter('stfalcon_blog.tag.admin.class', $config['tag']['admin']['class']);
+        }
+        if (isset($config['tag']['admin']['controller'])) {
+            $container->setParameter('stfalcon_blog.tag.admin.controller', $config['tag']['admin']['controller']);
+        }
         $loader->load('services.xml');
     }
 

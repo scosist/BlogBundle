@@ -6,13 +6,14 @@
 
     <services>
         <service id="twig.extension.read_more" class="Stfalcon\Bundle\BlogBundle\Extension\ReadMoreTwigExtension">
-            <argument type="service" id="service_container"></argument>
+            <argument type="service" id="service_container" />
             <tag name="twig.extension" alias="read_more" />
         </service>
 
         <service id="form.type.tags" class="Stfalcon\Bundle\BlogBundle\Bridge\Doctrine\Form\Type\TagsType">
             <tag name="form.type" alias="tags" />
-            <argument type="service" id="stfalcon_blog.tag.manager" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument>%stfalcon_blog.tag.entity%</argument>
         </service>
     </services>
 </container>
