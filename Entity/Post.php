@@ -16,6 +16,13 @@ use Gedmo\Mapping\Annotation as Gedmo;
 class Post
 {
     /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
      * Post title
      *
      * @var string $title
@@ -79,6 +86,14 @@ class Post
      * @ORM\Column(type="integer")
      */
     protected $commentsCount = 0;
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
     /**
      * Set post title

@@ -16,6 +16,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Tag
 {
     /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
      * Tag text
      *
      * @var string $text
