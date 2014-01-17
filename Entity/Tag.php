@@ -3,78 +3,48 @@
 namespace Stfalcon\Bundle\BlogBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Stfalcon\Bundle\BlogBundle\Entity\Tag
- *
- * @author Stepan Tanasiychuk <ceo@stfalcon.com>
- *
- * @ORM\MappedSuperclass
+ * @ORM\Table(name="blog_tags")
+ * @ORM\Entity(repositoryClass="Stfalcon\Bundle\BlogBundle\Repository\TagRepository")
  */
-class Tag
+class Tag extends BaseTag
 {
     /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
-
-    /**
-     * Tag text
-     *
-     * @var string $text
-     * @Assert\NotBlank()
-     * @ORM\Column(name="text", type="string", length=255)
-     */
-    protected $text = '';
-
-    /**
      * @var ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="Post", mappedBy="tags")
      */
     protected $posts;
 
     /**
-     * Get Tag id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set Tag text
+     * Entity constructor
      *
      * @param string $text A tag text
-     *
-     * @return void
      */
-    public function setText($text)
+    public function  __construct($text = null)
     {
         $this->text = $text;
+        $this->posts = new ArrayCollection();
     }
 
     /**
-     * Get Tag text
+     * Get posts for this tag
      *
-     * @return string
+     * @return ArrayCollection
      */
-    public function getText()
+    public function getPosts()
     {
-        return $this->text;
+        return $this->posts;
     }
 
     /**
-     * This method allows a class to decide how it will react when it is treated like a string
-     *
-     * @return string
+     * @param ArrayCollection $posts
      */
-    public function __toString()
+    public function setPosts($posts)
     {
-        return $this->getText()?$this->getText():'';
+        $this->posts = $posts;
     }
 }

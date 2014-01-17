@@ -9,7 +9,7 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author Stepan Tanasiychuk <ceo@stfalcon.com>
  */
-abstract class PostRepository extends EntityRepository
+class PostRepository extends EntityRepository
 {
 
     /**

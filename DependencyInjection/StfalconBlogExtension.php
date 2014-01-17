@@ -35,9 +35,13 @@ class StfalconBlogExtension extends Extension
         $container->setParameter('stfalcon_blog.disqus_shortname', $config['disqus_shortname']);
         $container->setParameter('stfalcon_blog.rss.title', $config['rss']['title']);
         $container->setParameter('stfalcon_blog.rss.description', $config['rss']['description']);
-
-        $container->setParameter('stfalcon_blog.post.entity', $config['post']['entity']);
-        $container->setParameter('stfalcon_blog.tag.entity', $config['tag']['entity']);
+        $loader->load('orm.xml');
+        if (isset($config['post']['entity'])) {
+            $container->setParameter('stfalcon_blog.post.entity', $config['post']['entity']);
+        }
+        if (isset($config['tag']['entity'])) {
+            $container->setParameter('stfalcon_blog.tag.entity', $config['tag']['entity']);
+        }
 
         if (isset($config['post']['repository'])) {
             $container->setParameter('stfalcon_blog.post.repository', $config['post']['repository']);
@@ -45,7 +49,6 @@ class StfalconBlogExtension extends Extension
         if (isset($config['tag']['repository'])) {
             $container->setParameter('stfalcon_blog.tag.repository', $config['tag']['repository']);
         }
-        $loader->load('orm.xml');
         $loader->load('admin.xml');
 
         if (isset($config['post']['admin']['class'])) {

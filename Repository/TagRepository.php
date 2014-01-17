@@ -9,6 +9,6 @@ use Doctrine\ORM\EntityRepository;
  *
  * @author Stepan Tanasiychuk <ceo@stfalcon.com>
  */
-abstract class TagRepository extends EntityRepository
+class TagRepository extends EntityRepository
 {
 }
