@@ -14,12 +14,12 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.3.3",
-        "symfony/symfony": "2.2.*",
+        "symfony/symfony": "~2.2",
         "stof/doctrine-extensions-bundle": "dev-master",
-        "sonata-project/admin-bundle": "2.2.*@dev",
-        "sonata-project/doctrine-orm-admin-bundle": "2.2.*@dev",
+        "sonata-project/admin-bundle": "~2.2",
+        "sonata-project/doctrine-orm-admin-bundle": "~2.2",
         "sonata-project/cache-bundle": "2.1.*@dev",
-        "knplabs/knp-paginator-bundle": "2.3.*",
+        "knplabs/knp-paginator-bundle": "~2.3",
         "zendframework/zend-feed": "2.0.*"
     },
     "suggest": {

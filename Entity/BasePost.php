@@ -35,7 +35,7 @@ class BasePost
      * @var string $slug
      *
      * @Assert\NotBlank()
-     * @Assert\MinLength(3)
+     * @Assert\Length(min=3)
      * @ORM\Column(name="slug", type="string", length=128, unique=true)
      */
     protected $slug;
