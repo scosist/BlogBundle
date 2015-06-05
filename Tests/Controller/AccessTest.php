@@ -14,10 +14,10 @@ class AccessTest extends WebTestCase
 
     public function testAccessDeniedForUnathorizedUsers()
     {
-        $this->_testReturnCode(401, $this->getUrl('admin_bundle_blog_post_list', array()));
-        $this->_testReturnCode(401, $this->getUrl('admin_bundle_blog_post_create', array()));
-        $this->_testReturnCode(401, $this->getUrl('admin_bundle_blog_post_edit', array('id' => 0)));
-        $this->_testReturnCode(401, $this->getUrl('admin_bundle_blog_post_delete', array('id' => 0)));
+        $this->_testReturnCode(401, $this->getUrl('admin_stfalcon_blog_post_list', array()));
+        $this->_testReturnCode(401, $this->getUrl('admin_stfalcon_blog_post_create', array()));
+        $this->_testReturnCode(401, $this->getUrl('admin_stfalcon_blog_post_edit', array('id' => 0)));
+        $this->_testReturnCode(401, $this->getUrl('admin_stfalcon_blog_post_delete', array('id' => 0)));
     }
 
     public function testAccessAllowedForUnathorizedUsers()
